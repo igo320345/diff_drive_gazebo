@@ -17,6 +17,8 @@ def generate_launch_description():
     pkg_simulation = get_package_share_directory('simulation')
 
     xacro_file = os.path.join(pkg_simulation, 'models', 'diff_drive', 'robot_model.xacro')
+    map_file = os.path.join(pkg_simulation, 'models', 'room_with_walls', 'map.yaml')
+
     
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -49,7 +51,7 @@ def generate_launch_description():
     spawn = Node(
         package='ros_gz_sim', 
         executable='create', 
-        arguments=[ '-name', 'diff_drive', '-topic', 'robot_description', ], 
+        arguments=[ '-name', 'diff_drive', '-topic', 'robot_description', '-x', '1', '-y', '1'], 
         output='screen'
     )
 
@@ -61,6 +63,26 @@ def generate_launch_description():
             'qos_overrides./tf_static.publisher.durability': 'transient_local',
         }],
         output='screen'
+    )
+
+    map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[{'yaml_filename': map_file, 
+                     'topic_name': 'map', 
+                     'frame_id': 'map'}]
+    )
+    map_server_lifecycle = Node(
+        package="nav2_lifecycle_manager",
+        executable="lifecycle_manager",
+        name="lifecycle_manager_map",
+        output="screen",
+        parameters=[{
+            "autostart": True,
+            "node_names": ["map_server"]
+        }]
     )
 
     return LaunchDescription([
@@ -75,5 +97,7 @@ def generate_launch_description():
         bridge,
         spawn,
         robot_state_publisher,
+        map_server,
+        map_server_lifecycle,
         rviz
     ])
