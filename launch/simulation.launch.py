@@ -44,6 +44,7 @@ def generate_launch_description():
     rviz = Node(
        package='rviz2',
        executable='rviz2',
+       parameters=[{'use_sim_time': True}],
        arguments=['-d', os.path.join(pkg_simulation, 'config', 'diff_drive.rviz')],
        condition=IfCondition(LaunchConfiguration('rviz'))
     )
@@ -71,24 +72,36 @@ def generate_launch_description():
         name='map_server',
         output='screen',
         parameters=[{'yaml_filename': map_file, 
-                     'topic_name': 'map', 
+                     'topic_name': 'map',
+                     'use_sim_time': True, 
                      'frame_id': 'map'}]
     )
     map_server_lifecycle = Node(
-        package="nav2_lifecycle_manager",
-        executable="lifecycle_manager",
-        name="lifecycle_manager_map",
-        output="screen",
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_map',
+        output='screen',
         parameters=[{
-            "autostart": True,
-            "node_names": ["map_server"]
+            'autostart': True,
+            'use_sim_time': True,
+            'node_names': ['map_server']
         }]
+    )
+
+    pf_localization = Node(
+        package='pf_localization',
+        executable='pf_localization',
+        parameters=[{'use_sim_time': True}],
+        output='screen'
     )
 
     return LaunchDescription([
         gz_sim,
-        DeclareLaunchArgument('rviz', default_value='true',
-                              description='Open RViz.'),
+        DeclareLaunchArgument(
+            'rviz', 
+            default_value='true',
+            description='Open RViz'
+        ),
         DeclareLaunchArgument(
             'urdf_model',
             default_value=xacro_file,
@@ -99,5 +112,6 @@ def generate_launch_description():
         robot_state_publisher,
         map_server,
         map_server_lifecycle,
-        rviz
+        rviz,
+        pf_localization
     ])

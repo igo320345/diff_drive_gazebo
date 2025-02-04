@@ -8,7 +8,12 @@
             <right_joint>wheel_right_joint</right_joint>
             <wheel_separation>0.65</wheel_separation>
             <wheel_radius>0.1</wheel_radius>
-            <odom_publish_frequency>1</odom_publish_frequency>
+            <topic>model/diff_drive/cmd_vel</topic>
+            <tf_topic>model/diff_drive/pose</tf_topic>
+            <topic>model/diff_drive/odometry</topic>
+            <frame_id>diff_drive/odom</frame_id>
+            <child_frame_id>diff_drive</child_frame_id>
+            <odom_publish_frequency>50</odom_publish_frequency>
             <max_linear_acceleration>1</max_linear_acceleration>
             <min_linear_acceleration>-1</min_linear_acceleration>
             <max_angular_acceleration>2</max_angular_acceleration>
@@ -31,13 +36,6 @@
             <use_pose_vector_msg>true</use_pose_vector_msg>
             <static_publisher>true</static_publisher>
             <static_update_frequency>1</static_update_frequency>
-        </plugin>
-
-        <plugin
-            filename="ignition-gazebo-odometry-publisher-system"
-            name="ignition::gazebo::systems::OdometryPublisher">
-            <odom_frame>diff_drive/odom</odom_frame>
-            <robot_base_frame>diff_drive</robot_base_frame>
         </plugin>
     </gazebo>
 
@@ -71,18 +69,4 @@
           <visualize>true</visualize>
         </sensor>
     </gazebo>
-
-<!-- 
-  <gazebo>
-    <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
-      <alwaysOn>true</alwaysOn>
-      <updateRate>30.0</updateRate>
-      <bodyName>base_link</bodyName>
-      <topicName>ground/state</topicName>
-      <gaussianNoise>0.01</gaussianNoise>
-      <frameName>world</frameName>
-      <xyzOffsets>0 0 0</xyzOffsets>
-      <rpyOffsets>0 0 0</rpyOffsets>
-    </plugin>
-    </gazebo>  -->
 </robot>
